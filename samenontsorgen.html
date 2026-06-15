@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SamenOntzorgen – Van zorgen naar grip</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:        #0d9488;
+    --teal-dark:   #0f766e;
+    --teal-light:  #ccfbf1;
+    --slate-50:    #f8fafc;
+    --slate-100:   #f1f5f9;
+    --slate-200:   #e2e8f0;
+    --slate-400:   #94a3b8;
+    --slate-500:   #64748b;
+    --slate-600:   #475569;
+    --slate-700:   #334155;
+    --slate-800:   #1e293b;
+    --slate-900:   #0f172a;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, sans-serif;
+    background: var(--slate-50);
+    color: var(--slate-800);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     SITE HEADER
+     ============================================================ */
+  .site-header {
+    background: #fff;
+    border-bottom: 1px solid var(--slate-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .navbar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  /* ============================================================
+     BRANDBLOK  (logo + naam + tagline)
+     ============================================================
+     Basisgroottes zouden zijn:
+       hart-icoon  : 28px
+       merknaam    : 19px
+       tagline     : 11px
+     Vergroot met ~15 %:
+       hart-icoon  : 32px  (≈ +14 %)
+       merknaam    : 22px  (≈ +16 %)
+       tagline     : 13px  (≈ +18 %)
+     ============================================================ */
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    width: 32px;
+    height: 32px;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .brand-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--slate-900);
+    letter-spacing: -0.3px;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--slate-500);
+    font-weight: 400;
+  }
+
+  /* ============================================================
+     NAVIGATIE
+     ============================================================ */
+  .nav-items {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    flex: 1;
+  }
+
+  .nav-items a {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--slate-600);
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .nav-items a:hover {
+    background: var(--slate-100);
+    color: var(--slate-900);
+  }
+
+  .nav-items a.active {
+    color: var(--teal);
+    background: var(--teal-light);
+  }
+
+  /* ============================================================
+     CTA-KNOP
+     ============================================================ */
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--teal);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .btn-cta:hover { background: var(--teal-dark); }
+
+  /* ============================================================
+     HAMBURGER (mobiel)
+     ============================================================ */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--slate-700);
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 24px 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--slate-900);
+    margin-bottom: 16px;
+  }
+
+  .hero-title span { color: var(--teal); }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--slate-600);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--teal);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--teal-dark); }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--slate-700);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: 1.5px solid var(--slate-200);
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+
+  .btn-secondary:hover { border-color: var(--slate-400); }
+
+  .hero-visual {
+    background: var(--teal-light);
+    border-radius: 16px;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--teal-dark);
+    font-size: 80px;
+  }
+
+  /* ============================================================
+     FEATURES
+     ============================================================ */
+  .features {
+    background: #fff;
+    border-top: 1px solid var(--slate-200);
+    padding: 64px 24px;
+  }
+
+  .features-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .features-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--slate-900);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .feature-card {
+    padding: 24px;
+    border: 1px solid var(--slate-200);
+    border-radius: 12px;
+  }
+
+  .feature-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .feature-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--slate-800);
+    margin-bottom: 8px;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: var(--slate-600);
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer {
+    background: var(--slate-800);
+    color: var(--slate-400);
+    font-size: 13px;
+    text-align: center;
+    padding: 24px;
+  }
+
+  footer strong { color: #fff; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 768px) {
+    .navbar { height: 60px; }
+
+    /* Brandblok blijft zichtbaar; nav en CTA verbergen */
+    .nav-items { display: none; }
+    .btn-cta   { display: none; }
+    .hamburger { display: block; }
+
+    /* Brandblok schaalt licht mee op kleine schermen */
+    .logo      { width: 28px; height: 28px; }
+    .brand-name { font-size: 19px; }
+    .tagline   { font-size: 12px; }
+
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 48px 16px 40px;
+    }
+
+    .hero-visual { height: 200px; font-size: 56px; }
+
+    .hero-title { font-size: 28px; }
+
+    .features-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SITE HEADER
+     ============================================================ -->
+<header class="site-header">
+  <nav class="navbar">
+
+    <!-- BRANDBLOK -->
+    <a href="#" class="navbar-brand" aria-label="SamenOntzorgen – home">
+      <!-- Hart-icoon (SVG) – 32 × 32 px -->
+      <svg class="logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5
+                 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08
+                 C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5
+                 c0 3.77-3.4 6.86-8.55 11.53L12 21.35z"/>
+      </svg>
+
+      <div class="brand">
+        <span class="brand-name">SamenOntzorgen</span>
+        <span class="tagline">Van zorgen naar grip</span>
+      </div>
+    </a>
+
+    <!-- NAVIGATIE -->
+    <ul class="nav-items" role="list">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Hoe het werkt</a></li>
+      <li><a href="#">Voor zorgverleners</a></li>
+      <li><a href="#">Over ons</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+
+    <!-- CTA-KNOP -->
+    <a href="#" class="btn-cta">
+      Gratis starten
+    </a>
+
+    <!-- HAMBURGER (mobiel) -->
+    <button class="hamburger" aria-label="Menu openen">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6"  x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+  </nav>
+</header>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div>
+    <h1 class="hero-title">
+      Van zorgen<br>naar <span>grip</span>
+    </h1>
+    <p class="hero-sub">
+      SamenOntzorgen ondersteunt zorgverleners en patiënten met
+      heldere beslisondersteuning, zodat iedereen weet wat er staat
+      te gebeuren — voor, tijdens en na een ingreep.
+    </p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Aan de slag</a>
+      <a href="#" class="btn-secondary">Meer informatie</a>
+    </div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">♥</div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="features">
+  <div class="features-inner">
+    <h2 class="features-title">Wat biedt SamenOntzorgen?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Risico-intake</h3>
+        <p>Automatische berekening van het perioperatief cardiale risico op basis van actuele klinische richtlijnen.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Postoperatieve monitoring</h3>
+        <p>Real-time bewaking van troponine, bloeddruk en hartslag met automatische alerting bij afwijkingen.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🩺</div>
+        <h3>Artsensamenvatting</h3>
+        <p>Eén klik genereert een volledige, gestructureerde samenvatting klaar voor het medisch dossier.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <strong>SamenOntzorgen</strong> &nbsp;·&nbsp; Van zorgen naar grip &nbsp;·&nbsp;
+  &copy; 2026
+</footer>
+
+</body>
+</html>
