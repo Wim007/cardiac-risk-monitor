@@ -140,6 +140,74 @@ app.get('/api/visitors/stats', async (_req, res) => {
   }
 });
 
+/**
+ * POST /api/backfill
+ * No request body required.
+ * Imports 30 days of historical visitors (May 17 – June 16, 2026) from nginx
+ * logs, performs a geolocation lookup for each IP via ip-api.com, and inserts
+ * every record with its original timestamp.  A 500 ms delay is applied between
+ * requests to stay well within ip-api.com's free-tier rate limit.
+ */
+app.post('/api/backfill', async (_req, res) => {
+  const historicalVisitors = [
+    { ip: "86.81.83.35",      timestamp: "2026-05-16T14:38:28Z", ua: "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" },
+    { ip: "89.205.245.219",   timestamp: "2026-05-16T18:18:09Z", ua: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36" },
+    { ip: "212.178.86.11",    timestamp: "2026-05-17T19:28:59Z", ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36" },
+    { ip: "98.88.148.58",     timestamp: "2026-05-24T17:38:23Z", ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36" },
+    { ip: "86.81.83.35",      timestamp: "2026-06-05T10:05:39Z", ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36" },
+    { ip: "89.205.150.138",   timestamp: "2026-06-10T19:09:38Z", ua: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36" },
+    { ip: "104.23.166.35",    timestamp: "2026-06-16T07:51:49Z", ua: "-" }
+  ];
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  let imported = 0;
+  let errors   = 0;
+
+  for (const visitor of historicalVisitors) {
+    let geo = { country: null, city: null, lat: null, lon: null };
+
+    try {
+      const geoRes = await axios.get(
+        `http://ip-api.com/json/${visitor.ip}?fields=status,country,city,lat,lon`,
+        { timeout: 5000 }
+      );
+      if (geoRes.data.status === 'success') {
+        geo = geoRes.data;
+      }
+    } catch (err) {
+      // Non-fatal – store the record without geo data
+      console.error(`Geolocation lookup failed for ${visitor.ip}:`, err.message);
+    }
+
+    try {
+      await pool.query(
+        `INSERT INTO visitors (ip_address, country, city, latitude, longitude, user_agent, timestamp, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $7)`,
+        [
+          visitor.ip,
+          geo.country || null,
+          geo.city    || null,
+          geo.lat     || null,
+          geo.lon     || null,
+          visitor.ua !== '-' ? visitor.ua : null,
+          visitor.timestamp
+        ]
+      );
+      imported++;
+      console.log(`Backfill: imported ${visitor.ip} (${visitor.timestamp})`);
+    } catch (err) {
+      errors++;
+      console.error(`Backfill: failed to insert ${visitor.ip}:`, err.message);
+    }
+
+    // Respect ip-api.com free-tier rate limit (≤ 45 req/min)
+    await delay(500);
+  }
+
+  return res.json({ success: true, imported, errors });
+});
+
 // ── Start ────────────────────────────────────────────────────────────────────
 initDb().then(() => {
   app.listen(PORT, () => {
