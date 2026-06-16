@@ -3311,6 +3311,32 @@ function renderTroponinChart(p) {
   UI.renderDashboard();
   USAGE_TRACKER.send('app_geopend');
 })();
+
+// ============================================================
+// VISITOR TRACKING
+// Resolve the client IP via a public lookup, then POST to the
+// geolocation-api backend so the visit is stored in PostgreSQL.
+// Errors are silently swallowed – tracking must never break the app.
+// ============================================================
+
+(async function trackVisitor() {
+  try {
+    // Resolve the public IP of this visitor using a free, no-key endpoint.
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const { ip: clientIp } = await ipRes.json();
+
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ip_address: clientIp,
+        user_agent: navigator.userAgent
+      })
+    }).catch(err => console.log('Tracking:', err));
+  } catch (err) {
+    console.log('Tracking:', err);
+  }
+})();
 </script>
 </body>
 </html>
