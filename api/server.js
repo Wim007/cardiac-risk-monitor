@@ -210,7 +210,16 @@ app.post('/api/backfill', async (_req, res) => {
 
 // ── Start ────────────────────────────────────────────────────────────────────
 initDb().then(() => {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
     console.log(`Geolocation API listening on port ${PORT}`);
+
+    // Auto-run backfill on startup
+    try {
+      console.log('Running backfill of historical data...');
+      const backfillRes = await axios.post(`http://localhost:${PORT}/api/backfill`);
+      console.log(`Backfill result: ${backfillRes.data.imported} imported, ${backfillRes.data.errors} errors`);
+    } catch (err) {
+      console.error('Backfill failed:', err.message);
+    }
   });
 });
