@@ -1065,6 +1065,11 @@
             <div id="preop-tn-interp" style="font-size:11px;margin-top:3px;"></div>
           </div>
           <div class="form-group">
+            <label class="form-label">Preop NT-proBNP (pg/mL) <span class="source-badge source-import">Import-ready</span></label>
+            <input class="form-input" id="l-preBnp" type="number" min="0" placeholder="bijv. 180" oninput="syncLab('preOpNtProBnp', +this.value); updatePreopBnpInterpretation(this.value)">
+            <div id="preop-bnp-interp" style="font-size:11px;margin-top:3px;"></div>
+          </div>
+          <div class="form-group">
             <label class="form-label">eGFR (ml/min/1.73m²)</label>
             <input class="form-input" id="l-egfr" type="number" placeholder="bijv. 65" oninput="syncLab('eGFR', +this.value)">
           </div>
@@ -1121,7 +1126,8 @@
       <div class="card">
         <div class="card-title"><span class="card-title-icon">&#9783;</span> Verwachte kolomstructuur</div>
         <p class="text-sm text-muted mb-12">Kolomnamen zijn case-insensitief. Kolommen mogen in willekeurige volgorde staan. Ontbrekende kolommen worden als leeg beschouwd.</p>
-        <div class="csv-template">patient_id,leeftijd,geslacht,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,preop_TnT,dag1_TnT,dag1_MAP,dag2_TnT,dag2_MAP,dag3_TnT,dag3_MAP</div>
+        <div class="csv-template">patient_id,leeftijd,geslacht,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,preop_TnT,preop_ntprobnp,dag1_TnT,dag1_MAP,dag2_TnT,dag2_MAP,dag3_TnT,dag3_MAP</div>
+        <div class="text-sm text-muted" style="margin-top:6px;">Kolom <strong>preop_ntprobnp</strong> is optioneel (pg/mL) — ontbreekt deze, dan toont de monitor NT-proBNP als "geen data".</div>
         <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;" class="text-sm text-muted">
           <div><strong>geslacht:</strong> M / V / X</div>
           <div><strong>spoedoperatie / comorbiditeiten:</strong> 1 of 0 (of ja/nee, true/false)</div>
@@ -1527,6 +1533,7 @@ function createEmptyPatient() {
     // FHIR: Observation[] (laboratory)
     labValues: {
       preOpTroponin: null,
+      preOpNtProBnp: null,
       eGFR: null,
       hemoglobin: null,
       creatinine: null
@@ -1903,6 +1910,31 @@ const RuleEngine = {
     return { level, color, peak, trend, flags, presentValues, minsCriteriumMet };
   },
 
+  // Preoperatieve NT-proBNP interpretatie (ESAIC 2023 / Gualandro 2024)
+  // NT-proBNP heeft in ESAIC een sterkere bewijsgraad (matig) dan hs-TnT (zwak) voor
+  // preoperatieve risicostratificatie en is de betere voorspeller van postoperatief
+  // acuut hartfalen (Gualandro 2024: AUC 0.825), waar troponine dat niet dekt.
+  evaluateNtProBnpRisk(patient) {
+    const val = patient.labValues?.preOpNtProBnp;
+    if (val === null || val === undefined || val === '') {
+      return { level: 'geen data', color: 'gray', value: null, flags: [] };
+    }
+    const v = Number(val);
+    const flags = [];
+    let level, color;
+    if (v >= 300) {
+      level = 'sterk verhoogd'; color = 'red';
+      flags.push('NT-proBNP ≥ 300 pg/mL: hoog risico op MACE en in het bijzonder postoperatief acuut hartfalen (ESAIC 2023 / Gualandro 2024: AUC 0.825 voor hartfalenvoorspelling)');
+    } else if (v >= 125) {
+      level = 'verhoogd'; color = 'orange';
+      flags.push('NT-proBNP ≥ 125 pg/mL: ESAIC-afkappunt voor verhoogd perioperatief risico — aanvullende informatie naast troponine, sterkste voorspeller voor hartfalen (ESAIC 2023)');
+    } else {
+      level = 'normaal bereik'; color = 'green';
+      flags.push('NT-proBNP < 125 pg/mL: binnen referentiewaarde (ESAIC 2023)');
+    }
+    return { level, color, value: v, flags };
+  },
+
   // Hemodynamic risk: focus on postop hypotension
   evaluateHemodynamicRisk(patient) {
     const m = patient.monitoring;
@@ -1970,6 +2002,7 @@ const RuleEngine = {
     const screening = this.evaluateScreeningIndication(patient);
     const baseline = this.evaluateBaselineRisk(patient);
     const troponin = this.evaluateTroponinRisk(patient);
+    const ntProBnp = this.evaluateNtProBnpRisk(patient);
     const hemodynamic = this.evaluateHemodynamicRisk(patient);
 
     const recs = [];
@@ -1998,24 +2031,24 @@ const RuleEngine = {
 
       // MINS-protocol gaat vóór absolute drempelwaarden
       if (troponin.minsCriteriumMet) {
-        recs.push({ priority: 'urgent', text: 'MINS vastgesteld: informeer cardioloog binnen 24 uur: MINS is in >90% asymptomatisch maar verhoogt 30-dgs MACE significant (VISION studie)' });
-        recs.push({ priority: 'urgent', text: 'Verricht serieel ECG (dag 1, dag 2, dag 3): sluit ischemie/new LBBB uit' });
-        recs.push({ priority: 'urgent', text: 'Herhaal troponinebepaling elke 24u tot dalende trend ≤2 opeenvolgende metingen' });
-        recs.push({ priority: 'hoog', text: 'Overweeg transthoracale echocardiografie bij aanhoudende stijging of hemodynamische instabiliteit' });
-        recs.push({ priority: 'hoog', text: 'Beoordeel medicatielijst: aspirine/anticoagulantia heropstarten conform cardiologieadvies' });
-        recs.push({ priority: 'hoog', text: 'Documenteer MINS in ontslagbrief: verhoogd risico op MACE blijft aanwezig tot 1 jaar postoperatief (Mol 2024, H2)' });
+        recs.push({ priority: 'hoog', text: 'MINS vastgesteld: overweeg cardiologisch overleg — MINS is in >90% asymptomatisch en verhoogt het 30-dgs MACE-risico (VISION studie); ESAIC geeft hierbij geen aanbeveling voor een vast escalatieprotocol, klinische beoordeling blijft leidend' });
+        recs.push({ priority: 'hoog', text: 'Overweeg serieel ECG (dag 1, dag 2, dag 3) ter uitsluiting van ischemie/new LBBB, met name bij klinische symptomen' });
+        recs.push({ priority: 'matig', text: 'Overweeg herhaalde troponinebepaling tot een dalende trend zichtbaar is (≤2 opeenvolgende metingen)' });
+        recs.push({ priority: 'matig', text: 'Overweeg transthoracale echocardiografie bij aanhoudende stijging of hemodynamische instabiliteit' });
+        recs.push({ priority: 'matig', text: 'Beoordeel medicatielijst: aspirine/anticoagulantia heropstarten conform cardiologieadvies' });
+        recs.push({ priority: 'matig', text: 'Documenteer MINS in ontslagbrief: verhoogd risico op MACE blijft aanwezig tot 1 jaar postoperatief (Mol 2024, H2)' });
         upgrade('orange');
       } else if (troponin.peak >= 150 || (troponin.peak >= 50 && troponin.trend === 'stijgend')) {
-        recs.push({ priority: 'urgent', text: 'Overweeg onmiddellijk cardiologieconsult: piekwaarde troponine significant verhoogd (≥150 ng/L)' });
-        recs.push({ priority: 'urgent', text: 'Herhaal troponinebepaling binnen 4–6 uur' });
-        recs.push({ priority: 'urgent', text: 'Verricht 12-kanaals ECG en klinische beoordeling' });
-        recs.push({ priority: 'urgent', text: 'Overweeg transthoracale echocardiografie' });
-        upgrade('red');
-      } else if (troponin.peak >= 50) {
-        recs.push({ priority: 'hoog', text: 'Herhaal troponinebepaling dag 2 en dag 3: serieel patroon bepalend voor MINS-classificatie' });
-        recs.push({ priority: 'hoog', text: 'Verricht klinische beoordeling op cardiale symptomen (pijn, dyspnoe, ritmestoornissen)' });
-        recs.push({ priority: 'hoog', text: 'Verricht ECG en overweeg cardiologieconsult' });
+        recs.push({ priority: 'hoog', text: 'Overweeg cardiologisch overleg: piekwaarde troponine sterk verhoogd (≥150 ng/L) — prognostisch signaal, geen bewezen indicatie voor een specifiek behandelpad (ESAIC 2023: onvoldoende bewijs voor troponine-gestuurd management)' });
+        recs.push({ priority: 'matig', text: 'Overweeg herhaalde troponinebepaling binnen 4–6 uur bij klinische aanwijzingen' });
+        recs.push({ priority: 'matig', text: 'Verricht 12-kanaals ECG en klinische beoordeling' });
+        recs.push({ priority: 'matig', text: 'Overweeg transthoracale echocardiografie bij aanhoudende twijfel' });
         upgrade('orange');
+      } else if (troponin.peak >= 50) {
+        recs.push({ priority: 'matig', text: 'Overweeg herhaalde troponinebepaling dag 2 en dag 3: serieel patroon relevant voor MINS-classificatie' });
+        recs.push({ priority: 'matig', text: 'Verricht klinische beoordeling op cardiale symptomen (pijn, dyspnoe, ritmestoornissen)' });
+        recs.push({ priority: 'matig', text: 'Overweeg ECG en eventueel cardiologisch overleg' });
+        upgrade('amber');
       } else if (troponin.peak >= 14) {
         recs.push({ priority: 'matig', text: 'Herhaal troponinebepaling dag 2: trend bepaalt of MINS-criterium van toepassing is' });
         recs.push({ priority: 'matig', text: 'Overweeg ECG bij nieuwe klachten; beoordeel preop baseline als referentie' });
@@ -2028,29 +2061,42 @@ const RuleEngine = {
 
     // Hemodynamic recommendations
     if (hemodynamic.level === 'hemodynamisch kritisch') {
-      recs.push({ priority: 'urgent', text: 'Beoordeel hemodynamische stabiliteit: aanhoudende postop hypotensie vastgesteld' });
-      recs.push({ priority: 'urgent', text: 'Evalueer relatie hypotensie en myocardiale schade' });
+      recs.push({ priority: 'hoog', text: 'Beoordeel hemodynamische stabiliteit: aanhoudende postop hypotensie vastgesteld' });
+      recs.push({ priority: 'matig', text: 'Evalueer relatie hypotensie en myocardiale schade' });
       // SIOHT specifiek
       if (patient.monitoring.siohTMinuten > 19) {
-        recs.push({ priority: 'urgent', text: 'SIOHT vastgesteld (>19 min): sterkste hemodynamische predictor — aOR 4.18, 30-dgs mortaliteit 6.5% vs 1.5%. Overweeg direct cardioloogconsult (Mol 2024, H3)' });
+        recs.push({ priority: 'hoog', text: 'SIOHT vastgesteld (>19 min): sterkste hemodynamische predictor in dit cohort — aOR 4.18, 30-dgs mortaliteit 6.5% vs 1.5%. Overweeg cardiologisch overleg (Mol 2024, H3; monocenter, nog niet extern gevalideerd)' });
       }
-      upgrade('red');
-    } else if (hemodynamic.level === 'hemodynamisch instabiel') {
-      recs.push({ priority: 'hoog', text: 'Monitor hemodynamische stabiliteit nauwkeurig: MAP herhaling vereist' });
       upgrade('orange');
-    } else if (hemodynamic.level === 'hemodynamische aandacht') {
-      recs.push({ priority: 'matig', text: 'Monitor bloeddruk frequent in eerste 24–48u postop' });
+    } else if (hemodynamic.level === 'hemodynamisch instabiel') {
+      recs.push({ priority: 'matig', text: 'Monitor hemodynamische stabiliteit nauwkeurig: MAP herhaling aan te raden' });
       upgrade('amber');
+    } else if (hemodynamic.level === 'hemodynamische aandacht') {
+      recs.push({ priority: 'laag', text: 'Monitor bloeddruk frequent in eerste 24–48u postop' });
+      upgrade('amber');
+    }
+
+    // NT-proBNP-gedreven aanbevelingen (ESAIC 2023 / Gualandro 2024)
+    if (ntProBnp.value !== null) {
+      if (ntProBnp.color === 'red') {
+        recs.push({ priority: 'hoog', text: 'NT-proBNP sterk verhoogd (≥300 pg/mL): verhoogd risico op MACE en postoperatief acuut hartfalen — overweeg cardiologisch overleg en extra aandacht voor vochtbalans/hartfalensymptomen (ESAIC 2023 / Gualandro 2024)' });
+        upgrade('orange');
+      } else if (ntProBnp.color === 'orange') {
+        recs.push({ priority: 'matig', text: 'NT-proBNP verhoogd (≥125 pg/mL): aanvullend op troponine — overweeg alertheid op tekenen van postoperatief hartfalen (ESAIC 2023)' });
+        upgrade('amber');
+      }
+    } else if (screening.status === 'indicated') {
+      recs.push({ priority: 'laag', text: 'NT-proBNP niet bepaald: overweeg aanvullende bepaling naast hs-TnT — ESAIC kent NT-proBNP de sterkste bewijsgraad toe voor preoperatieve risicostratificatie en hartfalenvoorspelling' });
     }
 
     // Baseline risk: follow-up planning
     if (baseline.level === 'hoog' || baseline.level === 'verhoogd') {
-      if (troponin.minsCriteriumMet) {
-        recs.push({ priority: 'urgent', text: 'Plan cardiologische polikliniek binnen 4–6 weken na ontslag: MINS verhoogt 1-jr MACE risico ongeacht absolute piekwaarde (Mol 2024, H2)' });
+      if (troponin.minsCriteriumMet || ntProBnp.color === 'red') {
+        recs.push({ priority: 'matig', text: 'Overweeg cardiologische follow-up binnen 4–6 weken na ontslag: verhoogd 1-jr MACE-risico gemeld in cohortdata, ongeacht absolute piekwaarde (Mol 2024, H2)' });
       } else if (troponin.peak !== null && troponin.peak >= 14) {
-        recs.push({ priority: 'hoog', text: 'Plan cardiologische follow-up binnen 3 maanden na ontslag' });
+        recs.push({ priority: 'matig', text: 'Overweeg cardiologische follow-up binnen 3 maanden na ontslag' });
       } else {
-        recs.push({ priority: 'matig', text: 'Overweeg cardiologische follow-up na ontslag bij hoog baselinerisico' });
+        recs.push({ priority: 'laag', text: 'Overweeg cardiologische follow-up na ontslag bij hoog baselinerisico' });
       }
     }
 
@@ -2069,7 +2115,7 @@ const RuleEngine = {
     const seen = new Set();
     const recommendations = recs.filter(r => { if (seen.has(r.text)) return false; seen.add(r.text); return true; });
 
-    return { recommendations, overallColor, overallUrgency, baseline, troponin, hemodynamic, screening };
+    return { recommendations, overallColor, overallUrgency, baseline, troponin, ntProBnp, hemodynamic, screening };
   }
 };
 
@@ -2176,6 +2222,9 @@ const UI = {
     const preTnVal = p.labValues.preOpTroponin !== null ? p.labValues.preOpTroponin : '';
     document.getElementById('l-preTn').value = preTnVal;
     updatePreopTnInterpretation(preTnVal);
+    const preBnpVal = p.labValues.preOpNtProBnp !== null ? p.labValues.preOpNtProBnp : '';
+    document.getElementById('l-preBnp').value = preBnpVal;
+    updatePreopBnpInterpretation(preBnpVal);
     document.getElementById('l-egfr').value = p.labValues.eGFR !== null ? p.labValues.eGFR : '';
     document.getElementById('l-hb').value = p.labValues.hemoglobin !== null ? p.labValues.hemoglobin : '';
     document.getElementById('l-creat').value = p.labValues.creatinine !== null ? p.labValues.creatinine : '';
@@ -2276,10 +2325,10 @@ const UI = {
 
   renderAlerts(p) {
     const result = RuleEngine.generateRecommendations(p);
-    const { baseline, troponin, hemodynamic, recommendations, overallColor, overallUrgency, screening } = result;
+    const { baseline, troponin, ntProBnp, hemodynamic, recommendations, overallColor, overallUrgency, screening } = result;
 
     const colorIcons = { green: '&#9899;', amber: '&#9888;', orange: '&#9888;', red: '&#9888;', gray: '&#9898;' };
-    const urgencyLabels = { laag: 'Laag: standaard monitoring', matig: 'Matig: verhoogde aandacht', hoog: 'Hoog: actie vereist', urgent: 'Urgent: onmiddellijke actie' };
+    const urgencyLabels = { laag: 'Laag: standaard monitoring', matig: 'Matig: verhoogde aandacht', hoog: 'Hoog: overleg/beoordeling overwegen', urgent: 'Hoog: overleg/beoordeling overwegen' };
 
     const trendLabel = { stijgend: '&#8679; stijgend', 'dalend maar afwijkend': '&#8681; dalend (nog afwijkend)', normaliserend: '&#8681; normaliserend', stabiel: '&#8596; stabiel' };
 
@@ -2312,7 +2361,7 @@ const UI = {
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
         <div class="risk-panel ${baseline.color}">
           <div class="risk-panel-title">Baselinerisico: ${baseline.level.toUpperCase()}</div>
           <div class="text-sm" style="margin-bottom:6px;">Risicoscore: ${baseline.score} punten</div>
@@ -2322,10 +2371,18 @@ const UI = {
         </div>
 
         <div class="risk-panel ${troponin.color}">
-          <div class="risk-panel-title">Troponine: ${troponin.level}</div>
+          <div class="risk-panel-title">hs-TnT: ${troponin.level}</div>
           ${troponin.peak !== null ? `<div class="text-sm" style="margin-bottom:6px;">Piekwaarde: <strong>${troponin.peak} ng/L</strong> · Trend: ${trendLabel[troponin.trend] || '—'}</div>` : '<div class="text-sm" style="margin-bottom:6px;">Nog geen waarden ingevoerd</div>'}
           <div class="flags-list">
             ${troponin.flags.map(f => `<div class="flag-item"><span class="flag-dot" style="background:var(--${troponin.color === 'green' ? 'green' : troponin.color === 'amber' ? 'amber' : troponin.color === 'orange' ? 'orange' : 'red'})"></span>${f}</div>`).join('') || '<div class="text-sm">Geen afwijkingen</div>'}
+          </div>
+        </div>
+
+        <div class="risk-panel ${ntProBnp.color}">
+          <div class="risk-panel-title">NT-proBNP: ${ntProBnp.level}</div>
+          ${ntProBnp.value !== null ? `<div class="text-sm" style="margin-bottom:6px;">Waarde: <strong>${ntProBnp.value} pg/mL</strong></div>` : '<div class="text-sm" style="margin-bottom:6px;">Nog geen waarde ingevoerd</div>'}
+          <div class="flags-list">
+            ${ntProBnp.flags.map(f => `<div class="flag-item"><span class="flag-dot" style="background:var(--${ntProBnp.color === 'green' ? 'green' : ntProBnp.color === 'amber' ? 'amber' : ntProBnp.color === 'orange' ? 'orange' : 'red'})"></span>${f}</div>`).join('') || '<div class="text-sm">Geen data</div>'}
           </div>
         </div>
 
@@ -2629,7 +2686,7 @@ function syncMed(key, value) {
 
 function syncLab(key, value) {
   ensurePatient();
-  if ((key === 'preOpTroponin') && value !== '' && Number(value) < 0) return;
+  if ((key === 'preOpTroponin' || key === 'preOpNtProBnp') && value !== '' && Number(value) < 0) return;
   AppState.currentPatient.labValues[key] = value;
   AppState.setPatient(AppState.currentPatient);
   updateJsonPreview();
@@ -2835,6 +2892,27 @@ function updatePreopTnInterpretation(val) {
   }
 }
 
+// Preoperatieve NT-proBNP interpretatie (ESAIC 2023 / Gualandro 2024)
+// ESAIC kent NT-proBNP de sterkste bewijskracht toe (matig, vs. zwak voor hs-TnT) voor
+// preoperatieve risicostratificatie en is een betere voorspeller van postoperatief
+// hartfalen dan troponine alleen (Gualandro 2024: AUC 0.825 voor acuut hartfalen).
+function updatePreopBnpInterpretation(val) {
+  const el = document.getElementById('preop-bnp-interp');
+  if (!el) return;
+  const v = parseFloat(val);
+  if (isNaN(v) || val === '') { el.textContent = ''; el.style.color = ''; return; }
+  if (v >= 300) {
+    el.innerHTML = '&#9888; Sterk verhoogd (≥300 pg/mL): hoog risico op MACE en postoperatief hartfalen <span style="opacity:0.7;">(ESAIC 2023 / Gualandro 2024)</span>';
+    el.style.color = 'var(--red)';
+  } else if (v >= 125) {
+    el.innerHTML = '&#9888; Verhoogd (≥125 pg/mL): ESAIC-afkappunt voor verhoogd perioperatief risico — aanvullend op troponine, vooral voorspellend voor hartfalen <span style="opacity:0.7;">(ESAIC 2023)</span>';
+    el.style.color = 'var(--orange)';
+  } else {
+    el.innerHTML = '&#10003; Binnen referentiewaarde (<125 pg/mL) <span style="opacity:0.7;">(ESAIC 2023)</span>';
+    el.style.color = 'var(--green)';
+  }
+}
+
 // ============================================================
 // TOAST
 // ============================================================
@@ -3022,6 +3100,7 @@ function buildPatientFromCSVRow(row, rowIndex) {
   p.medications.aceInhibitor = parseBool(row['ace_remmer']);
 
   p.labValues.preOpTroponin = parseNum(row['preop_tnt'] || row['preop_troponin'] || row['preop_hs-tnt']);
+  p.labValues.preOpNtProBnp = parseNum(row['preop_ntprobnp'] || row['preop_nt_probnp'] || row['preop_bnp']);
   p.labValues.eGFR          = parseNum(row['egfr'] || row['eGFR']);
   p.labValues.hemoglobin    = parseNum(row['hemoglobine'] || row['hemoglobin']);
   p.labValues.creatinine    = parseNum(row['creatinine']);
