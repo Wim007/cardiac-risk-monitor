@@ -1,0 +1,7 @@
+patient_id,initialen,achternaam,leeftijd,geslacht,afdeling,operatiedatum,risico_categorie,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,statin,anticoagulant,antiplatelet,ace_remmer,preop_TnT,preop_ntprobnp,eGFR,hemoglobine,creatinine,min_MAP,dur_MAP75,dur_MAP65,max_HR,tachy_min,sioht_min,dag1_TnT,dag1_MAP,dag1_HR,dag2_TnT,dag2_MAP,dag2_HR,dag3_TnT,dag3_MAP,dag3_HR
+DEMO-001,L.,Aaldering,52,M,Dagbehandeling chirurgie,2026-05-04,low,Laparoscopische liesbreukcorrectie,0,0,0,0,0,0,0,0,1,0,0,0,0,1,6,70,88,9.1,78,84,0,0,72,0,0,7,88,70,8,86,68,,
+DEMO-002,B.,de Wit,67,V,Orthopedie,2026-05-05,intermediate,Knieprothese rechts (TKA),0,0,0,0,0,0,1,0,1,0,1,0,0,1,8,95,74,8.2,82,80,0,0,76,0,0,9,84,74,11,82,72,10,85,70
+DEMO-003,G.,Vermeulen,76,V,Chirurgie,2026-05-06,intermediate,Open colonresectie,0,0,0,1,0,0,1,0,1,1,1,0,0,0,20,620,63,7.6,96,76,0,0,82,0,0,21,80,78,23,78,80,22,82,76
+DEMO-004,R.,Timmerman,71,M,Vaatchirurgie,2026-05-06,high,Femoropopliteale bypass,0,1,0,0,0,1,1,0,1,1,1,0,1,1,12,180,66,8.0,94,72,35,0,88,0,0,18,76,82,35,74,84,42,78,80
+DEMO-005,J.,Overbeek,80,M,Vaatchirurgie / IC,2026-05-07,high,Aortabifemorale bypass,0,1,1,1,1,1,1,1,1,1,1,1,1,1,18,950,39,6.8,168,58,180,95,102,45,32,45,62,96,185,64,102,230,68,98
+DEMO-006,N.,Sanders,68,V,Orthopedie,2026-05-07,intermediate,Heupfractuur ORIF (spoed),1,0,0,0,1,0,1,0,1,0,1,1,0,0,,210,70,7.3,88,72,20,0,96,15,0,65,72,96,88,76,92,74,78,84
