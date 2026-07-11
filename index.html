@@ -492,7 +492,6 @@
     font-size: 13px;
   }
 
-  .rec-item.urgent { background: var(--red-light); border-color: var(--red); color: #7f1d1d; }
   .rec-item.hoog { background: var(--orange-light); border-color: var(--orange); color: #7c2d12; }
   .rec-item.matig { background: var(--amber-light); border-color: var(--amber); color: #78350f; }
   .rec-item.laag { background: var(--green-light); border-color: var(--green); color: #14532d; }
@@ -1379,43 +1378,43 @@
       <div class="demo-case-item" onclick="loadDemo('DEMO-001')">
         <div class="demo-case-icon">&#128994;</div>
         <div>
-          <div class="demo-case-name">Casus 1: Laag risico</div>
-          <div class="demo-case-desc">J. Bakker, 58 jr, laparoscopische cholecystectomie, stabiel troponine</div>
+          <div class="demo-case-name">Casus 1: Buiten screeningsprofiel</div>
+          <div class="demo-case-desc">L. Aaldering, 52 jr, laparoscopische liesbreukcorrectie (laag risico) — indicatiepoort: routinescreening niet onderbouwd; hs-TnT en NT-proBNP normaal</div>
         </div>
       </div>
       <div class="demo-case-item" onclick="loadDemo('DEMO-002')">
-        <div class="demo-case-icon">&#128993;</div>
+        <div class="demo-case-icon">&#128994;</div>
         <div>
-          <div class="demo-case-name">Casus 2: Verhoogd risico</div>
-          <div class="demo-case-desc">M. de Vries, 71 jr, heupprothese, CAD + diabetes, licht verhoogd troponine</div>
+          <div class="demo-case-name">Casus 2: Screening geïndiceerd, geruststellend</div>
+          <div class="demo-case-desc">B. de Wit, 67 jr, knieprothese (TKA), DM2 + hypertensie — binnen profiel, hs-TnT en NT-proBNP normaal</div>
         </div>
       </div>
       <div class="demo-case-item" onclick="loadDemo('DEMO-003')">
         <div class="demo-case-icon">&#128308;</div>
         <div>
-          <div class="demo-case-name">Casus 3: Hoog risico</div>
-          <div class="demo-case-desc">P. Jansen, 78 jr, vasculaire chirurgie, troponinestijging + postop hypotensie</div>
+          <div class="demo-case-name">Casus 3: NT-proBNP sterk verhoogd</div>
+          <div class="demo-case-desc">G. Vermeulen, 76 jr, open colonresectie, hartfalen — NT-proBNP 620 pg/mL: hartfalenrisico ondanks slechts licht verhoogde hs-TnT</div>
         </div>
       </div>
       <div class="demo-case-item" onclick="loadDemo('DEMO-004')">
-        <div class="demo-case-icon">&#128994;</div>
+        <div class="demo-case-icon">&#128993;</div>
         <div>
-          <div class="demo-case-name">Casus 4: Knieprothese – laag risico</div>
-          <div class="demo-case-desc">T. Smits, 62 jr, TKA links, alleen hypertensie, stabiel troponine</div>
+          <div class="demo-case-name">Casus 4: MINS (troponinestijging ≥20%)</div>
+          <div class="demo-case-desc">R. Timmerman, 71 jr, femoropopliteale bypass, CAD + DM2 — MINS-criterium bereikt; NT-proBNP licht verhoogd</div>
         </div>
       </div>
       <div class="demo-case-item" onclick="loadDemo('DEMO-005')">
-        <div class="demo-case-icon">&#128993;</div>
+        <div class="demo-case-icon">&#128308;</div>
         <div>
-          <div class="demo-case-name">Casus 5: Colonresectie – verhoogd risico</div>
-          <div class="demo-case-desc">A. van Dam, 72 jr, sigmoïdresectie, DM2 + nierinsufficiëntie, milde troponinstijging</div>
+          <div class="demo-case-name">Casus 5: Zeer hoge troponine + SIOHT</div>
+          <div class="demo-case-desc">J. Overbeek, 80 jr, aortabifemorale bypass — hs-TnT piek 230 ng/L, hemodynamisch kritisch (SIOHT), NT-proBNP 950 pg/mL</div>
         </div>
       </div>
       <div class="demo-case-item" onclick="loadDemo('DEMO-006')">
-        <div class="demo-case-icon">&#128308;</div>
+        <div class="demo-case-icon">&#128993;</div>
         <div>
-          <div class="demo-case-name">Casus 6: Heupfractuur spoedoperatie – hoog risico</div>
-          <div class="demo-case-desc">C. Visser, 81 jr, ORIF spoedoperatie, CVA-voorgeschiedenis + DM2, significante troponinstijging</div>
+          <div class="demo-case-name">Casus 6: Spoedoperatie, intermediate troponine</div>
+          <div class="demo-case-desc">N. Sanders, 68 jr, heupfractuur ORIF (spoed), CVA-voorgeschiedenis + DM2 — hs-TnT piek 88 ng/L, tachycardie, NT-proBNP verhoogd</div>
         </div>
       </div>
     </div>
@@ -1573,57 +1572,94 @@ function createEmptyPatient() {
 const DemoRepository = {
   patients: {
     'DEMO-001': {
-      id: 'DEMO-001', firstName: 'J.', lastName: 'Bakker', age: 58, gender: 'M',
-      dossierID: 'ZH-110042', source: 'demo', asaClassification: 'II',
-      encounter: { surgeryType: 'Laparoscopische cholecystectomie', surgeryRiskCategory: 'low', emergencyProcedure: false, surgeryDate: '2026-05-01', ward: 'Chirurgie' },
+      id: 'DEMO-001', firstName: 'L.', lastName: 'Aaldering', age: 52, gender: 'M',
+      dossierID: 'ZH-100521', source: 'demo', asaClassification: 'II',
+      encounter: { surgeryType: 'Laparoscopische liesbreukcorrectie', surgeryRiskCategory: 'low', emergencyProcedure: false, surgeryDate: '2026-05-04', ward: 'Dagbehandeling chirurgie' },
       conditions: { cad: false, priorMI: false, heartFailure: false, cerebrovascularDisease: false, peripheralVascularDisease: false, diabetes: false, renalDisease: false, hypertension: true },
-      medications: { betaBlocker: false, statin: true, anticoagulant: false, antiplatelet: false, aceInhibitor: true, notes: 'Lisinopril 10mg, Atorvastatine 20mg' },
-      labValues: { preOpTroponin: 8, eGFR: 72, hemoglobin: 8.4, creatinine: 88 },
+      medications: { betaBlocker: false, statin: false, anticoagulant: false, antiplatelet: false, aceInhibitor: true, notes: 'Enalapril 10mg' },
+      labValues: { preOpTroponin: 6, preOpNtProBnp: 70, eGFR: 88, hemoglobin: 9.1, creatinine: 78 },
       monitoring: {
-        monitoringDays: 3,
+        monitoringDays: 2,
         days: [
-          { troponin: 9,  map: 82, hr: 72, notes: '' },
-          { troponin: 11, map: 85, hr: 70, notes: '' },
-          { troponin: 10, map: 88, hr: 68, notes: '' },
+          { troponin: 7, map: 88, hr: 70, notes: '' },
+          { troponin: 8, map: 86, hr: 68, notes: 'Klinisch stabiel, ontslag gepland' },
         ],
-        minPostopMAP: 79, durationBelowMAP75: 0, durationBelowMAP65: 0,
-        maxPostopHR: 74, durationTachycardie: 0, siohTMinuten: 0
+        minPostopMAP: 84, durationBelowMAP75: 0, durationBelowMAP65: 0,
+        maxPostopHR: 72, durationTachycardie: 0, siohTMinuten: 0
       },
       dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
     },
     'DEMO-002': {
-      id: 'DEMO-002', firstName: 'M.', lastName: 'de Vries', age: 71, gender: 'V',
-      dossierID: 'ZH-220187', source: 'demo', asaClassification: 'III',
-      encounter: { surgeryType: 'Heupprothese (THA)', surgeryRiskCategory: 'intermediate', emergencyProcedure: false, surgeryDate: '2026-05-02', ward: 'Orthopedie' },
-      conditions: { cad: true, priorMI: false, heartFailure: false, cerebrovascularDisease: false, peripheralVascularDisease: false, diabetes: true, renalDisease: false, hypertension: true },
-      medications: { betaBlocker: true, statin: true, anticoagulant: false, antiplatelet: true, aceInhibitor: false, notes: 'Metoprolol 50mg, Atorvastatine 40mg, Aspirine 80mg gestaakt preop' },
-      labValues: { preOpTroponin: 10, eGFR: 58, hemoglobin: 7.8, creatinine: 112 },
+      id: 'DEMO-002', firstName: 'B.', lastName: 'de Wit', age: 67, gender: 'V',
+      dossierID: 'ZH-100672', source: 'demo', asaClassification: 'II',
+      encounter: { surgeryType: 'Knieprothese rechts (TKA)', surgeryRiskCategory: 'intermediate', emergencyProcedure: false, surgeryDate: '2026-05-05', ward: 'Orthopedie' },
+      conditions: { cad: false, priorMI: false, heartFailure: false, cerebrovascularDisease: false, peripheralVascularDisease: false, diabetes: true, renalDisease: false, hypertension: true },
+      medications: { betaBlocker: false, statin: true, anticoagulant: false, antiplatelet: false, aceInhibitor: true, notes: 'Metformine 850mg, Atorvastatine 20mg, Perindopril 4mg' },
+      labValues: { preOpTroponin: 8, preOpNtProBnp: 95, eGFR: 74, hemoglobin: 8.2, creatinine: 82 },
       monitoring: {
-        monitoringDays: 4,
+        monitoringDays: 3,
         days: [
-          { troponin: 18, map: 78, hr: 82, notes: '' },
-          { troponin: 35, map: 72, hr: 85, notes: 'Patiënt klaagt over moeheid en dyspnoe' },
-          { troponin: 42, map: 75, hr: 80, notes: '' },
-          { troponin: 38, map: 78, hr: 78, notes: 'Licht dalend' },
+          { troponin: 9,  map: 84, hr: 74, notes: '' },
+          { troponin: 11, map: 82, hr: 72, notes: '' },
+          { troponin: 10, map: 85, hr: 70, notes: 'Klinisch stabiel' },
         ],
-        minPostopMAP: 68, durationBelowMAP75: 45, durationBelowMAP65: 10,
-        maxPostopHR: 88, durationTachycardie: 15, siohTMinuten: 8
+        minPostopMAP: 80, durationBelowMAP75: 0, durationBelowMAP65: 0,
+        maxPostopHR: 76, durationTachycardie: 0, siohTMinuten: 0
       },
       dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
     },
     'DEMO-003': {
-      id: 'DEMO-003', firstName: 'P.', lastName: 'Jansen', age: 78, gender: 'M',
-      dossierID: 'ZH-330095', source: 'demo', asaClassification: 'IV',
-      encounter: { surgeryType: 'Aorta-bifemorale bypass', surgeryRiskCategory: 'high', emergencyProcedure: false, surgeryDate: '2026-05-03', ward: 'Vaatchirurgie / IC' },
+      id: 'DEMO-003', firstName: 'G.', lastName: 'Vermeulen', age: 76, gender: 'V',
+      dossierID: 'ZH-100763', source: 'demo', asaClassification: 'III',
+      encounter: { surgeryType: 'Open colonresectie', surgeryRiskCategory: 'intermediate', emergencyProcedure: false, surgeryDate: '2026-05-06', ward: 'Chirurgie' },
+      conditions: { cad: false, priorMI: false, heartFailure: true, cerebrovascularDisease: false, peripheralVascularDisease: false, diabetes: true, renalDisease: false, hypertension: true },
+      medications: { betaBlocker: true, statin: true, anticoagulant: false, antiplatelet: false, aceInhibitor: false, notes: 'Bisoprolol 5mg, Rosuvastatine 20mg, Furosemide 40mg' },
+      labValues: { preOpTroponin: 20, preOpNtProBnp: 620, eGFR: 63, hemoglobin: 7.6, creatinine: 96 },
+      monitoring: {
+        monitoringDays: 3,
+        days: [
+          { troponin: 21, map: 80, hr: 78, notes: '' },
+          { troponin: 23, map: 78, hr: 80, notes: 'Preop NT-proBNP sterk verhoogd: alert op hartfalen' },
+          { troponin: 22, map: 82, hr: 76, notes: 'Klinisch stabiel, geen dyspnoe' },
+        ],
+        minPostopMAP: 76, durationBelowMAP75: 0, durationBelowMAP65: 0,
+        maxPostopHR: 82, durationTachycardie: 0, siohTMinuten: 0
+      },
+      dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
+    },
+    'DEMO-004': {
+      id: 'DEMO-004', firstName: 'R.', lastName: 'Timmerman', age: 71, gender: 'M',
+      dossierID: 'ZH-100854', source: 'demo', asaClassification: 'III',
+      encounter: { surgeryType: 'Femoropopliteale bypass', surgeryRiskCategory: 'high', emergencyProcedure: false, surgeryDate: '2026-05-06', ward: 'Vaatchirurgie' },
+      conditions: { cad: true, priorMI: false, heartFailure: false, cerebrovascularDisease: false, peripheralVascularDisease: true, diabetes: true, renalDisease: false, hypertension: true },
+      medications: { betaBlocker: true, statin: true, anticoagulant: false, antiplatelet: true, aceInhibitor: true, notes: 'Metoprolol 50mg, Atorvastatine 40mg, Clopidogrel 75mg, Ramipril 5mg' },
+      labValues: { preOpTroponin: 12, preOpNtProBnp: 180, eGFR: 66, hemoglobin: 8.0, creatinine: 94 },
+      monitoring: {
+        monitoringDays: 4,
+        days: [
+          { troponin: 18, map: 76, hr: 82, notes: 'Stijging boven preop baseline' },
+          { troponin: 35, map: 74, hr: 84, notes: 'MINS-criterium bereikt: cardioloog geïnformeerd' },
+          { troponin: 42, map: 78, hr: 80, notes: 'ECG verricht: geen ST-elevatie' },
+          { troponin: 38, map: 80, hr: 78, notes: 'Licht dalend' },
+        ],
+        minPostopMAP: 72, durationBelowMAP75: 35, durationBelowMAP65: 0,
+        maxPostopHR: 88, durationTachycardie: 0, siohTMinuten: 0
+      },
+      dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
+    },
+    'DEMO-005': {
+      id: 'DEMO-005', firstName: 'J.', lastName: 'Overbeek', age: 80, gender: 'M',
+      dossierID: 'ZH-100945', source: 'demo', asaClassification: 'IV',
+      encounter: { surgeryType: 'Aortabifemorale bypass', surgeryRiskCategory: 'high', emergencyProcedure: false, surgeryDate: '2026-05-07', ward: 'Vaatchirurgie / IC' },
       conditions: { cad: true, priorMI: true, heartFailure: true, cerebrovascularDisease: true, peripheralVascularDisease: true, diabetes: true, renalDisease: true, hypertension: true },
-      medications: { betaBlocker: true, statin: true, anticoagulant: true, antiplatelet: true, aceInhibitor: true, notes: 'Carvedilol 12.5mg, Rosuvastatine 40mg, Clopidogrel, Fraxiparine therapeutisch' },
-      labValues: { preOpTroponin: 18, eGFR: 38, hemoglobin: 6.9, creatinine: 165 },
+      medications: { betaBlocker: true, statin: true, anticoagulant: true, antiplatelet: true, aceInhibitor: true, notes: 'Carvedilol 12.5mg, Rosuvastatine 40mg, Clopidogrel 75mg, Nadroparine therapeutisch' },
+      labValues: { preOpTroponin: 18, preOpNtProBnp: 950, eGFR: 39, hemoglobin: 6.8, creatinine: 168 },
       monitoring: {
         monitoringDays: 7,
         days: [
-          { troponin: 45,  map: 62, hr: 95,  notes: 'Postop instabiliteit: vasopressoren gestart' },
-          { troponin: 185, map: 65, hr: 102, notes: 'Troponine significant gestegen: cardioloog geïnformeerd' },
-          { troponin: 230, map: 68, hr: 98,  notes: 'Cardiologie geconsulteerd: ECG verricht' },
+          { troponin: 45,  map: 62, hr: 96,  notes: 'Postop instabiliteit: vasopressoren gestart' },
+          { troponin: 185, map: 64, hr: 102, notes: 'Troponine sterk gestegen: cardioloog geconsulteerd' },
+          { troponin: 230, map: 68, hr: 98,  notes: 'ECG: geen STEMI, echocardiografie aangevraagd' },
           { troponin: 195, map: 72, hr: 90,  notes: 'Licht dalend' },
           { troponin: 160, map: 74, hr: 86,  notes: '' },
           { troponin: 130, map: 76, hr: 82,  notes: 'Verder dalend' },
@@ -1634,62 +1670,24 @@ const DemoRepository = {
       },
       dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
     },
-    'DEMO-004': {
-      id: 'DEMO-004', firstName: 'T.', lastName: 'Smits', age: 62, gender: 'M',
-      dossierID: 'ZH-440231', source: 'demo', asaClassification: 'III',
-      encounter: { surgeryType: 'Knieprothese links (TKA)', surgeryRiskCategory: 'intermediate', emergencyProcedure: false, surgeryDate: '2026-05-05', ward: 'Orthopedie' },
-      conditions: { cad: false, priorMI: false, heartFailure: false, cerebrovascularDisease: false, peripheralVascularDisease: false, diabetes: false, renalDisease: false, hypertension: true },
-      medications: { betaBlocker: false, statin: true, anticoagulant: false, antiplatelet: false, aceInhibitor: true, notes: 'Ramipril 5mg, Atorvastatine 20mg' },
-      labValues: { preOpTroponin: 6, eGFR: 82, hemoglobin: 8.6, creatinine: 78 },
-      monitoring: {
-        monitoringDays: 2,
-        days: [
-          { troponin: 7, map: 88, hr: 68, notes: '' },
-          { troponin: 8, map: 86, hr: 70, notes: '' },
-        ],
-        minPostopMAP: 82, durationBelowMAP75: 0, durationBelowMAP65: 0,
-        maxPostopHR: 72, durationTachycardie: 0, siohTMinuten: 0
-      },
-      dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
-    },
-    'DEMO-005': {
-      id: 'DEMO-005', firstName: 'A.', lastName: 'van Dam', age: 72, gender: 'V',
-      dossierID: 'ZH-550374', source: 'demo', asaClassification: 'III',
-      encounter: { surgeryType: 'Laparoscopische sigmoïdresectie', surgeryRiskCategory: 'intermediate', emergencyProcedure: false, surgeryDate: '2026-05-06', ward: 'Chirurgie' },
-      conditions: { cad: false, priorMI: false, heartFailure: false, cerebrovascularDisease: false, peripheralVascularDisease: false, diabetes: true, renalDisease: true, hypertension: true },
-      medications: { betaBlocker: false, statin: true, anticoagulant: false, antiplatelet: false, aceInhibitor: true, notes: 'Lisinopril 10mg, Rosuvastatine 20mg, Metformine (gestaakt preop)' },
-      labValues: { preOpTroponin: 9, eGFR: 52, hemoglobin: 7.5, creatinine: 118 },
-      monitoring: {
-        monitoringDays: 4,
-        days: [
-          { troponin: 14, map: 76, hr: 78, notes: '' },
-          { troponin: 22, map: 74, hr: 82, notes: 'Lichte stijging: verhoogde hydratiecontrole' },
-          { troponin: 19, map: 78, hr: 78, notes: '' },
-          { troponin: 15, map: 80, hr: 74, notes: 'Dalend, klinisch stabiel' },
-        ],
-        minPostopMAP: 72, durationBelowMAP75: 20, durationBelowMAP65: 0,
-        maxPostopHR: 84, durationTachycardie: 10, siohTMinuten: 0
-      },
-      dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
-    },
     'DEMO-006': {
-      id: 'DEMO-006', firstName: 'C.', lastName: 'Visser', age: 81, gender: 'V',
-      dossierID: 'ZH-660589', source: 'demo', asaClassification: 'III',
-      encounter: { surgeryType: 'Heupfractuur (ORIF, spoedoperatie)', surgeryRiskCategory: 'intermediate', emergencyProcedure: true, surgeryDate: '2026-05-07', ward: 'Orthopedie / IC' },
+      id: 'DEMO-006', firstName: 'N.', lastName: 'Sanders', age: 68, gender: 'V',
+      dossierID: 'ZH-101036', source: 'demo', asaClassification: 'III',
+      encounter: { surgeryType: 'Heupfractuur ORIF (spoed)', surgeryRiskCategory: 'intermediate', emergencyProcedure: true, surgeryDate: '2026-05-07', ward: 'Orthopedie' },
       conditions: { cad: false, priorMI: false, heartFailure: false, cerebrovascularDisease: true, peripheralVascularDisease: false, diabetes: true, renalDisease: false, hypertension: true },
-      medications: { betaBlocker: false, statin: true, anticoagulant: true, antiplatelet: false, aceInhibitor: false, notes: 'Atorvastatine 40mg, Eliquis gestaakt 48u preop' },
-      labValues: { preOpTroponin: 12, eGFR: 61, hemoglobin: 7.2, creatinine: 98 },
+      medications: { betaBlocker: false, statin: true, anticoagulant: true, antiplatelet: false, aceInhibitor: false, notes: 'Atorvastatine 40mg, Apixaban gestaakt 48u preop' },
+      labValues: { preOpTroponin: null, preOpNtProBnp: 210, eGFR: 70, hemoglobin: 7.3, creatinine: 88 },
       monitoring: {
         monitoringDays: 5,
         days: [
-          { troponin: 28, map: 68, hr: 92, notes: 'Postoperatief hypotensie: IV vocht gegeven' },
-          { troponin: 65, map: 70, hr: 98, notes: 'Troponine stijging: cardioloog telefonisch geconsulteerd' },
-          { troponin: 88, map: 72, hr: 90, notes: 'Cardiologie geconsulteerd, ECG: geen STEMI' },
-          { troponin: 74, map: 76, hr: 82, notes: 'Langzaam dalend' },
-          { troponin: 55, map: 78, hr: 76, notes: 'Verdere daling, klinisch stabiel' },
+          { troponin: 28, map: 74, hr: 90, notes: 'Postop lichte hypotensie: vocht toegediend' },
+          { troponin: 65, map: 72, hr: 96, notes: 'Troponine gestegen: klinische beoordeling' },
+          { troponin: 88, map: 76, hr: 92, notes: 'ECG: geen acute ischemie' },
+          { troponin: 74, map: 78, hr: 84, notes: 'Dalend' },
+          { troponin: 55, map: 80, hr: 80, notes: 'Klinisch stabiel' },
         ],
-        minPostopMAP: 64, durationBelowMAP75: 60, durationBelowMAP65: 15,
-        maxPostopHR: 98, durationTachycardie: 30, siohTMinuten: 12
+        minPostopMAP: 72, durationBelowMAP75: 20, durationBelowMAP65: 0,
+        maxPostopHR: 96, durationTachycardie: 15, siohTMinuten: 0
       },
       dataSource: { identification: 'import', encounter: 'import', conditions: 'import', medications: 'import', labValues: 'import', monitoring: 'manual' }
     }
@@ -2021,7 +2019,7 @@ const RuleEngine = {
       const order = ['green','amber','orange','red'];
       if (order.indexOf(c) > order.indexOf(overallColor)) {
         overallColor = c;
-        const labels = { green:'laag', amber:'matig', orange:'hoog', red:'urgent' };
+        const labels = { green:'laag', amber:'matig', orange:'hoog', red:'zeer-hoog' };
         overallUrgency = labels[c];
       }
     };
@@ -2158,8 +2156,8 @@ const UI = {
       if (result.overallColor === 'red' || result.overallColor === 'orange') alerts++;
       // high = only red
       if (result.overallColor === 'red') high++;
-      // followup = any hoog/urgent recommendation
-      if (result.recommendations.some(r => r.priority === 'hoog' || r.priority === 'urgent')) followup++;
+      // followup = elke aanbeveling met prioriteit 'hoog'
+      if (result.recommendations.some(r => r.priority === 'hoog')) followup++;
     });
 
     document.getElementById('stat-alerts').textContent = alerts;
@@ -2175,7 +2173,7 @@ const UI = {
     list.innerHTML = patients.map(p => {
       const result = RuleEngine.generateRecommendations(p);
       const colorMap = { green: 'green', amber: 'amber', orange: 'orange', red: 'red', gray: 'gray' };
-      const labelMap = { green: 'Laag risico', amber: 'Matig', orange: 'Hoog risico', red: 'Urgent', gray: 'Geen data' };
+      const labelMap = { green: 'Laag risico', amber: 'Matig', orange: 'Hoog risico', red: 'Zeer hoog risico', gray: 'Geen data' };
       const c = colorMap[result.overallColor] || 'gray';
       const initials = (p.firstName[0] || '') + (p.lastName[0] || '');
       return `
@@ -2328,7 +2326,7 @@ const UI = {
     const { baseline, troponin, ntProBnp, hemodynamic, recommendations, overallColor, overallUrgency, screening } = result;
 
     const colorIcons = { green: '&#9899;', amber: '&#9888;', orange: '&#9888;', red: '&#9888;', gray: '&#9898;' };
-    const urgencyLabels = { laag: 'Laag: standaard monitoring', matig: 'Matig: verhoogde aandacht', hoog: 'Hoog: overleg/beoordeling overwegen', urgent: 'Hoog: overleg/beoordeling overwegen' };
+    const urgencyLabels = { laag: 'Laag: standaard monitoring', matig: 'Matig: verhoogde aandacht', hoog: 'Hoog: overleg/beoordeling overwegen', 'zeer-hoog': 'Zeer hoog: overleg/beoordeling aangewezen' };
 
     const trendLabel = { stijgend: '&#8679; stijgend', 'dalend maar afwijkend': '&#8681; dalend (nog afwijkend)', normaliserend: '&#8681; normaliserend', stabiel: '&#8596; stabiel' };
 
@@ -2487,7 +2485,7 @@ const UI = {
     const { baseline, troponin, hemodynamic, recommendations, overallUrgency } = result;
 
     const geslacht = { M: 'man', V: 'vrouw', X: 'onbekend geslacht' }[p.gender] || '';
-    const urgencyNL = { laag: 'laag perioperatief cardiaal risico', matig: 'matig verhoogd perioperatief cardiaal risico', hoog: 'hoog perioperatief cardiaal risico', urgent: 'urgent perioperatief cardiaal risico: onmiddellijke aandacht vereist' };
+    const urgencyNL = { laag: 'laag perioperatief cardiaal risico', matig: 'matig verhoogd perioperatief cardiaal risico', hoog: 'hoog perioperatief cardiaal risico', 'zeer-hoog': 'zeer hoog perioperatief cardiaal risico' };
 
     const conditions = Object.entries(p.conditions)
       .filter(([, v]) => v)
@@ -2789,7 +2787,7 @@ function newPatient() {
 
 function openCriticalOverview() {
   const colorOrder = { red: 0, orange: 1, amber: 2, green: 3, gray: 4 };
-  const labelMap = { red: 'Urgent', orange: 'Hoog risico', amber: 'Matig', green: 'Laag risico', gray: 'Geen data' };
+  const labelMap = { red: 'Zeer hoog risico', orange: 'Hoog risico', amber: 'Matig', green: 'Laag risico', gray: 'Geen data' };
   const patients = AppState.sessionPatients.filter(p => p && p.lastName && p.lastName.trim() !== '' && p.age);
 
   const sorted = patients
@@ -2808,13 +2806,13 @@ function openCriticalOverview() {
         ? '<span style="background:#fff3cd;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;margin-left:6px;">MINS</span>'
         : '';
       const trend = tn && tn.trend ? ` · ${tn.trend}` : '';
-      const urgentRec = result.recommendations.find(r => r.priority === 'urgent' || r.priority === 'hoog');
+      const topRec = result.recommendations.find(r => r.priority === 'hoog');
       return `
         <div onclick="closeCriticalOverview();openPatient('${p.id}')" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--slate-200);border-radius:6px;cursor:pointer;background:var(--slate-50);transition:background 0.15s;" onmouseover="this.style.background='var(--slate-100)'" onmouseout="this.style.background='var(--slate-50)'">
           <div class="patient-avatar" style="flex-shrink:0;">${(p.firstName[0]||'')+(p.lastName[0]||'')}</div>
           <div style="flex:1;min-width:0;">
             <div style="font-weight:600;font-size:13px;">${p.firstName} ${p.lastName} <span style="font-weight:400;color:var(--slate-400);font-size:12px;">${p.age} jr · ${p.encounter.surgeryType || '—'}</span></div>
-            <div style="font-size:11px;color:var(--slate-500);margin-top:2px;">Piek hs-TnT: <strong>${peak}</strong>${mins}${trend}${urgentRec ? ' · ' + urgentRec.text.substring(0, 60) + '…' : ''}</div>
+            <div style="font-size:11px;color:var(--slate-500);margin-top:2px;">Piek hs-TnT: <strong>${peak}</strong>${mins}${trend}${topRec ? ' · ' + topRec.text.substring(0, 60) + '…' : ''}</div>
           </div>
           <span class="badge badge-${c}" style="flex-shrink:0;">${labelMap[c]}</span>
         </div>`;
@@ -3156,7 +3154,7 @@ function runCSVImport(csvText, fileName) {
       else AppState.sessionPatients.push(result.patient);
 
       div.classList.add('success');
-      const riskLabel = { green: 'Laag', amber: 'Verhoogd', orange: 'Hoog', red: 'Urgent', gray: '—' };
+      const riskLabel = { green: 'Laag', amber: 'Verhoogd', orange: 'Hoog', red: 'Zeer hoog', gray: '—' };
       const riskResult = RuleEngine.evaluateBaselineRisk(result.patient);
       div.textContent = `✓ Rij ${i + 1}: ${result.patient.lastName} | ${result.patient.age} jr | Baselinerisico: ${riskLabel[riskResult.color] || riskResult.level}`;
     } else {
@@ -3182,34 +3180,34 @@ function downloadCSVTemplate() {
 
 function downloadDemoCSV() {
   const csv = [
-    'patient_id,initialen,achternaam,leeftijd,geslacht,afdeling,operatiedatum,risico_categorie,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,statin,anticoagulant,antiplatelet,ace_remmer,preop_TnT,eGFR,hemoglobine,creatinine,min_MAP,dur_MAP75,dur_MAP65,max_HR,tachy_min,sioht_min,dag1_TnT,dag1_MAP,dag1_HR,dag2_TnT,dag2_MAP,dag2_HR,dag3_TnT,dag3_MAP,dag3_HR',
-    'NC-001,R.,Pietersen,55,M,Chirurgie,2026-05-01,low,Laparoscopische cholecystectomie,0,0,0,0,0,0,0,0,1,0,1,0,0,1,6,74,8.8,82,84,0,0,74,0,0,7,86,72,8,84,70,,',
-    'NC-002,E.,Hendriks,68,V,Orthopedie,2026-05-02,intermediate,Knieprothese links (TKA),0,0,0,0,0,0,1,0,1,0,1,0,0,0,7,64,7.8,94,78,10,0,78,0,0,9,79,74,11,81,76,,',
-    'NC-003,F.,van der Berg,74,M,Urologie,2026-05-03,intermediate,Radicale prostatectomie,0,0,0,0,1,0,1,1,1,0,1,0,0,1,11,52,8.2,118,74,20,0,82,5,0,15,75,80,18,77,78,14,80,76',
-    'NC-004,S.,Kuijpers,48,V,Oncologie,2026-05-04,low,Mastectomie rechts,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,88,9.2,68,88,0,0,68,0,0,6,89,66,5,90,64,,',
-    'NC-005,H.,Vermeer,63,M,Chirurgie,2026-05-05,low,Thyroidectomie totaal,0,0,0,0,0,0,0,0,1,0,0,0,0,1,8,78,9.0,86,82,0,0,72,0,0,9,84,70,8,86,68,,',
-    'NC-006,A.,Brouwer,79,V,Chirurgie,2026-05-06,intermediate,Liesbreuk reparatie,0,0,0,0,1,0,0,0,1,0,1,0,0,1,13,58,7.4,106,72,25,0,84,8,0,18,72,80,22,74,82,19,76,78',
-    'NC-007,P.,Willems,56,M,Chirurgie,2026-05-07,intermediate,Laparoscopische sigmoïdresectie,0,0,0,0,0,0,1,0,0,0,0,0,0,0,9,82,8.6,78,78,15,0,86,5,0,12,80,84,16,78,82,13,82,80',
-    'NC-008,M.,de Groot,71,V,Orthopedie / IC,2026-05-07,high,Heupprothese spoed (THA),1,0,0,0,0,0,1,1,1,0,1,1,0,0,14,48,7.0,128,66,55,18,98,25,12,28,68,96,45,70,92,38,73,86',
-    'NC-009,T.,Mulder,42,M,Chirurgie,2026-05-08,intermediate,Appendectomie,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,94,9.4,72,90,0,0,88,0,0,5,91,86,4,92,84,,',
-    'NC-010,L.,Oosterhout,66,V,Longchirurgie,2026-05-08,intermediate,Longkwabresectie rechtsonder,0,0,0,0,0,0,0,0,1,1,1,0,0,1,10,68,8.4,92,74,18,0,88,8,0,16,76,82,24,73,80,20,77,78',
+    'patient_id,initialen,achternaam,leeftijd,geslacht,afdeling,operatiedatum,risico_categorie,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,statin,anticoagulant,antiplatelet,ace_remmer,preop_TnT,preop_ntprobnp,eGFR,hemoglobine,creatinine,min_MAP,dur_MAP75,dur_MAP65,max_HR,tachy_min,sioht_min,dag1_TnT,dag1_MAP,dag1_HR,dag2_TnT,dag2_MAP,dag2_HR,dag3_TnT,dag3_MAP,dag3_HR',
+    'NC-001,R.,Pietersen,55,M,Chirurgie,2026-05-01,low,Laparoscopische cholecystectomie,0,0,0,0,0,0,0,0,1,0,1,0,0,1,6,60,74,8.8,82,84,0,0,74,0,0,7,86,72,8,84,70,,',
+    'NC-002,E.,Hendriks,68,V,Orthopedie,2026-05-02,intermediate,Knieprothese links (TKA),0,0,0,0,0,0,1,0,1,0,1,0,0,0,7,110,64,7.8,94,78,10,0,78,0,0,9,79,74,11,81,76,,',
+    'NC-003,F.,van der Berg,74,M,Urologie,2026-05-03,intermediate,Radicale prostatectomie,0,0,0,0,1,0,1,1,1,0,1,0,0,1,11,340,52,8.2,118,74,20,0,82,5,0,15,75,80,18,77,78,14,80,76',
+    'NC-004,S.,Kuijpers,48,V,Oncologie,2026-05-04,low,Mastectomie rechts,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,45,88,9.2,68,88,0,0,68,0,0,6,89,66,5,90,64,,',
+    'NC-005,H.,Vermeer,63,M,Chirurgie,2026-05-05,low,Thyroidectomie totaal,0,0,0,0,0,0,0,0,1,0,0,0,0,1,8,80,78,9.0,86,82,0,0,72,0,0,9,84,70,8,86,68,,',
+    'NC-006,A.,Brouwer,79,V,Chirurgie,2026-05-06,intermediate,Liesbreuk reparatie,0,0,0,0,1,0,0,0,1,0,1,0,0,1,13,420,58,7.4,106,72,25,0,84,8,0,18,72,80,22,74,82,19,76,78',
+    'NC-007,P.,Willems,56,M,Chirurgie,2026-05-07,intermediate,Laparoscopische sigmoïdresectie,0,0,0,0,0,0,1,0,0,0,0,0,0,0,9,130,82,8.6,78,78,15,0,86,5,0,12,80,84,16,78,82,13,82,80',
+    'NC-008,M.,de Groot,71,V,Orthopedie / IC,2026-05-07,high,Heupprothese spoed (THA),1,0,0,0,0,0,1,1,1,0,1,1,0,0,14,890,48,7.0,128,66,55,18,98,25,12,28,68,96,45,70,92,38,73,86',
+    'NC-009,T.,Mulder,42,M,Chirurgie,2026-05-08,intermediate,Appendectomie,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,55,94,9.4,72,90,0,0,88,0,0,5,91,86,4,92,84,,',
+    'NC-010,L.,Oosterhout,66,V,Longchirurgie,2026-05-08,intermediate,Longkwabresectie rechtsonder,0,0,0,0,0,0,0,0,1,1,1,0,0,1,10,160,68,8.4,92,74,18,0,88,8,0,16,76,82,24,73,80,20,77,78',
   ].join('\n') + '\n';
   triggerDownload(csv, 'demo-patienten-niet-cardiaal.csv', 'text/csv;charset=utf-8;');
 }
 
 function loadDemoPatients() {
   const csvText = [
-    'patient_id,initialen,achternaam,leeftijd,geslacht,afdeling,operatiedatum,risico_categorie,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,statin,anticoagulant,antiplatelet,ace_remmer,preop_TnT,eGFR,hemoglobine,creatinine,min_MAP,dur_MAP75,dur_MAP65,max_HR,tachy_min,sioht_min,dag1_TnT,dag1_MAP,dag1_HR,dag2_TnT,dag2_MAP,dag2_HR,dag3_TnT,dag3_MAP,dag3_HR',
-    'NC-001,R.,Pietersen,55,M,Chirurgie,2026-05-01,low,Laparoscopische cholecystectomie,0,0,0,0,0,0,0,0,1,0,1,0,0,1,6,74,8.8,82,84,0,0,74,0,0,7,86,72,8,84,70,,',
-    'NC-002,E.,Hendriks,68,V,Orthopedie,2026-05-02,intermediate,Knieprothese links (TKA),0,0,0,0,0,0,1,0,1,0,1,0,0,0,7,64,7.8,94,78,10,0,78,0,0,9,79,74,11,81,76,,',
-    'NC-003,F.,van der Berg,74,M,Urologie,2026-05-03,intermediate,Radicale prostatectomie,0,0,0,0,1,0,1,1,1,0,1,0,0,1,11,52,8.2,118,74,20,0,82,5,0,15,75,80,18,77,78,14,80,76',
-    'NC-004,S.,Kuijpers,48,V,Oncologie,2026-05-04,low,Mastectomie rechts,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,88,9.2,68,88,0,0,68,0,0,6,89,66,5,90,64,,',
-    'NC-005,H.,Vermeer,63,M,Chirurgie,2026-05-05,low,Thyroidectomie totaal,0,0,0,0,0,0,0,0,1,0,0,0,0,1,8,78,9.0,86,82,0,0,72,0,0,9,84,70,8,86,68,,',
-    'NC-006,A.,Brouwer,79,V,Chirurgie,2026-05-06,intermediate,Liesbreuk reparatie,0,0,0,0,1,0,0,0,1,0,1,0,0,1,13,58,7.4,106,72,25,0,84,8,0,18,72,80,22,74,82,19,76,78',
-    'NC-007,P.,Willems,56,M,Chirurgie,2026-05-07,intermediate,Laparoscopische sigmoïdresectie,0,0,0,0,0,0,1,0,0,0,0,0,0,0,9,82,8.6,78,78,15,0,86,5,0,12,80,84,16,78,82,13,82,80',
-    'NC-008,M.,de Groot,71,V,Orthopedie / IC,2026-05-07,high,Heupprothese spoed (THA),1,0,0,0,0,0,1,1,1,0,1,1,0,0,14,48,7.0,128,66,55,18,98,25,12,28,68,96,45,70,92,38,73,86',
-    'NC-009,T.,Mulder,42,M,Chirurgie,2026-05-08,intermediate,Appendectomie,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,94,9.4,72,90,0,0,88,0,0,5,91,86,4,92,84,,',
-    'NC-010,L.,Oosterhout,66,V,Longchirurgie,2026-05-08,intermediate,Longkwabresectie rechtsonder,0,0,0,0,0,0,0,0,1,1,1,0,0,1,10,68,8.4,92,74,18,0,88,8,0,16,76,82,24,73,80,20,77,78',
+    'patient_id,initialen,achternaam,leeftijd,geslacht,afdeling,operatiedatum,risico_categorie,operatietype,spoedoperatie,CAD,eerder_MI,hartfalen,cerebrovasculair,perifeer_vaataandoening,diabetes,nierziekte,hypertensie,beta_blokker,statin,anticoagulant,antiplatelet,ace_remmer,preop_TnT,preop_ntprobnp,eGFR,hemoglobine,creatinine,min_MAP,dur_MAP75,dur_MAP65,max_HR,tachy_min,sioht_min,dag1_TnT,dag1_MAP,dag1_HR,dag2_TnT,dag2_MAP,dag2_HR,dag3_TnT,dag3_MAP,dag3_HR',
+    'NC-001,R.,Pietersen,55,M,Chirurgie,2026-05-01,low,Laparoscopische cholecystectomie,0,0,0,0,0,0,0,0,1,0,1,0,0,1,6,60,74,8.8,82,84,0,0,74,0,0,7,86,72,8,84,70,,',
+    'NC-002,E.,Hendriks,68,V,Orthopedie,2026-05-02,intermediate,Knieprothese links (TKA),0,0,0,0,0,0,1,0,1,0,1,0,0,0,7,110,64,7.8,94,78,10,0,78,0,0,9,79,74,11,81,76,,',
+    'NC-003,F.,van der Berg,74,M,Urologie,2026-05-03,intermediate,Radicale prostatectomie,0,0,0,0,1,0,1,1,1,0,1,0,0,1,11,340,52,8.2,118,74,20,0,82,5,0,15,75,80,18,77,78,14,80,76',
+    'NC-004,S.,Kuijpers,48,V,Oncologie,2026-05-04,low,Mastectomie rechts,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,45,88,9.2,68,88,0,0,68,0,0,6,89,66,5,90,64,,',
+    'NC-005,H.,Vermeer,63,M,Chirurgie,2026-05-05,low,Thyroidectomie totaal,0,0,0,0,0,0,0,0,1,0,0,0,0,1,8,80,78,9.0,86,82,0,0,72,0,0,9,84,70,8,86,68,,',
+    'NC-006,A.,Brouwer,79,V,Chirurgie,2026-05-06,intermediate,Liesbreuk reparatie,0,0,0,0,1,0,0,0,1,0,1,0,0,1,13,420,58,7.4,106,72,25,0,84,8,0,18,72,80,22,74,82,19,76,78',
+    'NC-007,P.,Willems,56,M,Chirurgie,2026-05-07,intermediate,Laparoscopische sigmoïdresectie,0,0,0,0,0,0,1,0,0,0,0,0,0,0,9,130,82,8.6,78,78,15,0,86,5,0,12,80,84,16,78,82,13,82,80',
+    'NC-008,M.,de Groot,71,V,Orthopedie / IC,2026-05-07,high,Heupprothese spoed (THA),1,0,0,0,0,0,1,1,1,0,1,1,0,0,14,890,48,7.0,128,66,55,18,98,25,12,28,68,96,45,70,92,38,73,86',
+    'NC-009,T.,Mulder,42,M,Chirurgie,2026-05-08,intermediate,Appendectomie,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,55,94,9.4,72,90,0,0,88,0,0,5,91,86,4,92,84,,',
+    'NC-010,L.,Oosterhout,66,V,Longchirurgie,2026-05-08,intermediate,Longkwabresectie rechtsonder,0,0,0,0,0,0,0,0,1,1,1,0,0,1,10,160,68,8.4,92,74,18,0,88,8,0,16,76,82,24,73,80,20,77,78',
   ].join('\n') + '\n';
 
   const { rows } = parseCSVText(csvText);
@@ -3273,7 +3271,7 @@ function exportCSV() {
       laag: 'Laag risico',
       matig: 'Matig verhoogd',
       hoog: 'Hoog risico',
-      urgent: 'Urgent'
+      'zeer-hoog': 'Zeer hoog risico'
     };
 
     const topRec = recommendations[0] ? `[${recommendations[0].priority.toUpperCase()}] ${recommendations[0].text}` : '—';
@@ -3286,7 +3284,7 @@ function exportCSV() {
       `Baselinerisico: ${baseline.level}`,
       troponin.peak !== null ? `TnT piek: ${troponin.peak} ng/L (${troponin.level})` : 'TnT: geen data',
       `Hemodynamiek: ${hemodynamic.level}`,
-      `Urgentie: ${overallUrgency}`
+      `Urgentie: ${urgencyNL[overallUrgency] || overallUrgency}`
     ].join(' | ');
 
     return [
@@ -3485,11 +3483,59 @@ function renderTroponinChart(p) {
 }
 
 // ============================================================
+// MIGRATIE OUDE BROWSERDATA
+// Eerdere versies (o.a. de standalone monitor-pagina) sloegen sessiedata op
+// in localStorage onder 'crm_session_patients' / 'crm_current_patient_id'.
+// Die opslag kan verouderde fictieve demopatiënten en gecachte 'urgent'-status
+// bevatten. Deze migratie ruimt dat gericht op ZONDER echte, handmatig
+// ingevoerde patiëntdata te verwijderen:
+//   - demopatiënten (source === 'demo') worden verwijderd;
+//   - handmatige/geïmporteerde patiënten blijven behouden, maar eventueel
+//     meegeschreven afgeleide status ('urgent' → 'hoog', recommendations) wordt
+//     geneutraliseerd zodat de app die opnieuw genereert.
+// De huidige app bewaart zelf niets in localStorage; deze functie is puur
+// opschoning en is idempotent (draait maximaal één keer per schema-versie).
+// ============================================================
+
+function migrateLegacyBrowserData() {
+  try {
+    if (localStorage.getItem('crm_schema_version') === '2') return;
+
+    const KEY = 'crm_session_patients';
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      let list = JSON.parse(raw);
+      if (Array.isArray(list)) {
+        list = list
+          .filter(p => p && p.source !== 'demo')
+          .map(p => {
+            if (Array.isArray(p.recommendations)) {
+              p.recommendations.forEach(r => { if (r && r.priority === 'urgent') r.priority = 'hoog'; });
+            }
+            if (typeof p.overallUrgency === 'string' && p.overallUrgency === 'urgent') p.overallUrgency = 'hoog';
+            // afgeleide status verwijderen zodat de app opnieuw (getemperd) berekent
+            delete p.overallColor;
+            return p;
+          });
+        if (list.length > 0) localStorage.setItem(KEY, JSON.stringify(list));
+        else localStorage.removeItem(KEY);
+      } else {
+        localStorage.removeItem(KEY);
+      }
+    }
+    localStorage.setItem('crm_schema_version', '2');
+  } catch (e) {
+    // localStorage niet beschikbaar of corrupte data: stil overslaan, nooit de app breken
+  }
+}
+
+// ============================================================
 // INIT
 // Pre-load all 6 demo cases into session on startup
 // ============================================================
 
 (function init() {
+  migrateLegacyBrowserData();
   DemoRepository.all().forEach(p => AppState.sessionPatients.push(p));
   // Set casus 3 (high risk) as the default active patient
   AppState.currentPatient = JSON.parse(JSON.stringify(AppState.sessionPatients[2]));
